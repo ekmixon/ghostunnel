@@ -20,7 +20,7 @@ RUN cd /go/src/github.com/ghostunnel/ghostunnel && \
     cp ghostunnel /usr/bin/ghostunnel
 
 # Create a multi-stage build with the binary
-FROM alpine
+FROM alpine:3.15.4
 
 RUN apk add --no-cache --update libtool curl
 COPY --from=build /usr/bin/ghostunnel /usr/bin/ghostunnel
