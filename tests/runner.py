@@ -5,9 +5,9 @@ import time
 import subprocess
 
 test = sys.argv[1]
-path = './%s.py' % test
+path = f'./{test}.py'
 
-print("=== RUN   %s" % test)
+print(f"=== RUN   {test}")
 
 start = time.time()
 proc = subprocess.run([path], stdout=subprocess.PIPE, stderr=subprocess.PIPE)

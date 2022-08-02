@@ -17,7 +17,7 @@ def run_ghostunnel(args, stdout=sys.stdout.buffer, stderr=sys.stderr.buffer, pre
     """Helper to run ghostunnel in integration test mode"""
 
     # Default shuthdown timeout to speed up tests (otherwise defaults to 5m)
-    if not any('shutdown-timeout' in f for f in args):
+    if all('shutdown-timeout' not in f for f in args):
         args.append('--shutdown-timeout=5s')
 
     # Pass args through env var into integration test hook
@@ -56,7 +56,7 @@ def terminate(ghostunnel):
     try:
         if ghostunnel:
             ghostunnel.terminate()
-            for _ in range(0, 10):
+            for _ in range(10):
                 try:
                     ghostunnel.wait(timeout=1)
                 except BaseException:
@@ -167,7 +167,7 @@ class TcpClient(MySocket):
         self.port = port
 
     def connect(self, attempts=1, msg=''):
-        for _ in range(0, attempts):
+        for _ in range(attempts):
             try:
                 self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.socket.settimeout(TIMEOUT)
@@ -218,7 +218,7 @@ class TlsClient(MySocket):
         self.tls_listener = None
 
     def connect(self, attempts=1, peer=None):
-        for _ in range(0, attempts):
+        for _ in range(attempts):
             try:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 sock.settimeout(TIMEOUT)
@@ -240,14 +240,13 @@ class TlsClient(MySocket):
                                                   ssl_version=self.ssl_version)
                 self.socket.connect((LOCALHOST, self.port))
 
-                if peer is not None:
-                    if self.socket.getpeercert()['subject'][3][0][1] == peer:
-                        return self
-                    else:
-                        print("Did not connect to expected peer: {0}".format(
-                            self.socket.getpeercert()))
-                else:
+                if peer is None:
                     return self
+                if self.socket.getpeercert()['subject'][3][0][1] == peer:
+                    return self
+                else:
+                    print("Did not connect to expected peer: {0}".format(
+                        self.socket.getpeercert()))
             except Exception as e:
                 print(e)
                 if attempts == 1:
@@ -316,7 +315,7 @@ class UnixClient(MySocket):
         return self.socket_path
 
     def connect(self, attempts=1, msg=''):
-        for _ in range(0, attempts):
+        for _ in range(attempts):
             try:
                 self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 self.socket.settimeout(TIMEOUT)

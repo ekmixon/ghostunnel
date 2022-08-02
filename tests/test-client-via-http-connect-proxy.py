@@ -11,9 +11,8 @@ class FakeConnectProxyHandler(http.server.BaseHTTPRequestHandler):
         try:
             host, port = self.path.split(':')
             if host != '127.0.0.1':
-                raise Exception(
-                    'proxy target must be localhost, but was: ' + self.path)
-            print_ok("got proxy request, with proxy target: " + self.path)
+                raise Exception(f'proxy target must be localhost, but was: {self.path}')
+            print_ok(f"got proxy request, with proxy target: {self.path}")
             socket = TcpClient(int(port))
             socket.connect(attempts=5)
             self.wfile.write(
@@ -24,14 +23,13 @@ class FakeConnectProxyHandler(http.server.BaseHTTPRequestHandler):
                     "utf-8"))
             remote = socket.get_socket()
             rlist = [self.connection, remote]
-            for _ in range(0, 1000):
+            for _ in range(1000):
                 reads, _, errs = select.select(rlist, [], rlist, 10)
                 if errs:
-                    print_ok("got error in select(): " + str(errs))
+                    print_ok(f"got error in select(): {str(errs)}")
                     break
                 for s in reads:
-                    data = s.recv(8192)
-                    if data:
+                    if data := s.recv(8192):
                         print_ok("proxy is sending/receiving " +
                                  str(len(data)) + " bytes")
                         (self.connection if s == remote else remote).send(data)

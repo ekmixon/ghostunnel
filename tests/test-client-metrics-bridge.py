@@ -46,7 +46,7 @@ if __name__ == "__main__":
                                      '--metrics-url=http://localhost:13080/post'])
 
         # wait for metrics to post
-        for i in range(0, 10):
+        for _ in range(10):
             if received_metrics:
                 break
             else:

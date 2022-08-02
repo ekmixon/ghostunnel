@@ -4,6 +4,7 @@
 Test that ensures that Graphite metrics submission works.
 """
 
+
 from common import LOCALHOST, RootCert, STATUS_PORT, print_ok, run_ghostunnel, terminate
 import socket
 
@@ -37,7 +38,7 @@ if __name__ == "__main__":
         conn, addr = m.accept()
         for line in conn.makefile().readlines():
             if len(line.partition(' ')) != 3:
-                raise Exception('invalid metric: ' + line)
+                raise Exception(f'invalid metric: {line}')
 
         print_ok("OK")
     finally:

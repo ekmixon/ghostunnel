@@ -48,7 +48,7 @@ if __name__ == "__main__":
                                      '--metrics-url=http://localhost:13080/post'])
 
         # wait for metrics to post
-        for i in range(0, 10):
+        for _ in range(10):
             if received_metrics:
                 break
             else:
@@ -87,10 +87,12 @@ if __name__ == "__main__":
         ]
 
         metrics_found = [item['metric'] for item in received_metrics]
-        missing_metrics = [metric for metric in expected_metrics if metric not in metrics_found]
-
-        if missing_metrics:
-            raise Exception('missing metrics from ghostunnel instance: %s' % missing_metrics)
+        if missing_metrics := [
+            metric
+            for metric in expected_metrics
+            if metric not in metrics_found
+        ]:
+            raise Exception(f'missing metrics from ghostunnel instance: {missing_metrics}')
 
 
         print_ok("OK")
